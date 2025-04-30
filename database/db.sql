@@ -6,7 +6,7 @@ CREATE DATABASE carMotors CHARACTER SET utf8mb4;
 USE carMotors;
 
 
-CREATE TABLE provider (
+CREATE TABLE providers (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50),
     identification BIGINT,
@@ -14,31 +14,37 @@ CREATE TABLE provider (
     numberVisits INT
 );
 
-CREATE TABLE sparePart (
+CREATE TABLE spareParts (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50),
     type ENUM('mechanic', 'electric', 'carBody', 'consumable'),
     brand VARCHAR(20),
     model VARCHAR(20),
     cost DOUBLE,
-    lifeSpan DATE,
+    lifeSpan INT,
     state ENUM('available', 'reserved', 'outOfService')
 );
 
-CREATE TABLE package (
+CREATE TABLE packages (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    entryDate DATE,
     idProvider INT,
-    FOREIGN KEY (idProvider) REFERENCES provider(id) ON DELETE CASCADE
+    idOrder INT,
+    FOREIGN KEY (idProvider) REFERENCES provider(id) ON DELETE CASCADE,
+    FOREIGN KEY (idOrder) REFERENCES order(id) ON DELETE CASCADE
 );
 
 CREATE TABLE inventory (
-    idSparePart INT PRIMARY KEY,
-    quantity INT,
-    FOREIGN KEY (idSparePart) REFERENCES sparePart(id) ON DELETE CASCADE
+    idSparePart INT,
+    idPackage INT,
+    initialQuantity INT,
+    currentQuantity INT,
+    entryDate DATE,
+    expirationDate DATE,
+    FOREIGN KEY (idSparePart) REFERENCES sparePart(id) ON DELETE CASCADE,
+    FOREIGN KEY (idPackage) REFERENCES package(id) ON DELETE CASCADE
 );
 
-CREATE TABLE order (
+CREATE TABLE orders (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     orderDate DATE
 );
@@ -48,7 +54,7 @@ CREATE TABLE orderSpare (
     idSparePart INT,
     quantity INT,
     entryDate DATE,
-    FOREIGN KEY (idOrder) REFERENCES order(id) ON DELETE CASCADE,
+    FOREIGN KEY (idOrder) REFERENCES `order`(id) ON DELETE CASCADE,
     FOREIGN KEY (idSparePart) REFERENCES sparePart(id) ON DELETE CASCADE,
     PRIMARY KEY (idOrder, idSparePart)
 );
@@ -61,14 +67,14 @@ CREATE TABLE spareProvider (
     PRIMARY KEY (idSparePart, idProvider)
 );
 
-CREATE TABLE employee (
+CREATE TABLE employees (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50),
     phone BIGINT,
     speciality VARCHAR(20)
 );
 
-CREATE TABLE service (
+CREATE TABLE services (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     type ENUM('preventive', 'corrective'),
     description VARCHAR(100),
@@ -78,10 +84,12 @@ CREATE TABLE service (
     discount INT,
     stateService ENUM('pending', 'underway', 'finished'),
     idEmployee INT,
+    idClient INT,
+    FOREIGN KEY (idClient) REFERENCES client(id) ON DELETE CASCADE,
     FOREIGN KEY (idEmployee) REFERENCES employee(id) ON DELETE CASCADE
 );
 
-CREATE TABLE vehicle (
+CREATE TABLE vehicles (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     brand VARCHAR(20),
     model VARCHAR(30),
@@ -97,7 +105,7 @@ CREATE TABLE serviceVehicle (
     PRIMARY KEY (idService, idVehicle)
 );
 
-CREATE TABLE client (
+CREATE TABLE clients (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50),
     identification BIGINT,
@@ -114,20 +122,12 @@ CREATE TABLE clientVehicle (
     PRIMARY KEY (idClient, idVehicle)
 );  
 
-CREATE TABLE clientService (
+CREATE TABLE bills (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    idClient INT,
     idService INT,
-    FOREIGN KEY (idClient) REFERENCES client(id) ON DELETE CASCADE,
-    FOREIGN KEY (idService) REFERENCES service(id) ON DELETE CASCADE
-);
-
-CREATE TABLE bill (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    idClientService INT,
-    issuance TIMESTAMP,
+    issuance DATE,
     cufe VARCHAR(100),
     url VARCHAR(100),
     taxes DECIMAL(10,2),
-    FOREIGN KEY (idClientService) REFERENCES clientService(id) ON DELETE CASCADE
+    FOREIGN KEY (idService) REFERENCES service(id) ON DELETE CASCADE
 );
