@@ -6,12 +6,7 @@ public class Service {
     private String description;
     private int estimatedTime; // in minutes or hours?
     private int actualTime;    // in minutes or hours?
-    private double cost;
-    private int discount; // Percentage or fixed amount?
     private ServiceState stateService;
-    private int idEmployee; // Foreign key to Employee
-    private int idClient;   // Foreign key to Client
-    // Note: Relationship to Vehicle (via serviceVehicle) handled by DAOs.
 
     public enum ServiceType {
         PREVENTIVE, CORRECTIVE
@@ -32,11 +27,7 @@ public class Service {
         this.description = description;
         this.estimatedTime = estimatedTime;
         this.actualTime = actualTime;
-        this.cost = cost;
-        this.discount = discount;
         this.stateService = stateService;
-        this.idEmployee = idEmployee;
-        this.idClient = idClient;
     }
 
     // Getters and Setters
@@ -80,44 +71,12 @@ public class Service {
         this.actualTime = actualTime;
     }
 
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
-    }
-
-    public int getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(int discount) {
-        this.discount = discount;
-    }
-
     public ServiceState getStateService() {
         return stateService;
     }
 
     public void setStateService(ServiceState stateService) {
         this.stateService = stateService;
-    }
-
-    public int getIdEmployee() {
-        return idEmployee;
-    }
-
-    public void setIdEmployee(int idEmployee) {
-        this.idEmployee = idEmployee;
-    }
-
-    public int getIdClient() {
-        return idClient;
-    }
-
-    public void setIdClient(int idClient) {
-        this.idClient = idClient;
     }
 
     @Override
@@ -128,11 +87,7 @@ public class Service {
                ", description=\"" + description + "\"" +
                ", estimatedTime=" + estimatedTime +
                ", actualTime=" + actualTime +
-               ", cost=" + cost +
-               ", discount=" + discount +
                ", stateService=" + stateService +
-               ", idEmployee=" + idEmployee +
-               ", idClient=" + idClient +
                "}";
     }
 }

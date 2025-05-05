@@ -2,7 +2,6 @@ package com.carMotors.shared.view;
 
 import com.carMotors.customer.controller.CustomerController;
 import com.carMotors.customer.model.ClientDAO;
-import com.carMotors.customer.model.MockClientDAO; // Using Mock DAO
 import com.carMotors.customer.view.CustomerManagementPanel;
 
 import javax.swing.*;

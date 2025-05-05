@@ -1,5 +1,7 @@
 package com.carMotors.customer.model;
 
+import java.util.*;
+
 public class Client {
     private int id;
     private String name;
@@ -7,21 +9,27 @@ public class Client {
     private long phone;
     private String email;
     private String address;
-    // Note: The relationship to Vehicle (via clientVehicle) will be handled
-    // using collections and managed by DAOs, representing the many-to-many link.
-
-    // Default constructor
-    public Client() {
-    }
+    private List<Vehicle> vehicles;
 
     // Parameterized constructor
-    public Client(int id, String name, long identification, long phone, String email, String address) {
+    public Client(int id, String name, long identification, long phone, String email, String address, List<Vehicle> vehicles) {
         this.id = id;
         this.name = name;
         this.identification = identification;
         this.phone = phone;
         this.email = email;
         this.address = address;
+        this.vehicles = vehicles != null ? vehicles : new ArrayList<>();
+
+        // Establece la relación bidireccional
+        for (Vehicle vehicle : this.vehicles) {
+            vehicle.setOwner(this);
+        }
+    }
+
+    // Constructor sin vehículos
+    public Client(int id, String name, long identification, long phone, String email, String address) {
+        this(id, name, identification, phone, email, address, new ArrayList<>());
     }
 
     // Getters and Setters
@@ -73,16 +81,49 @@ public class Client {
         this.address = address;
     }
 
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
+
+    // Agregar vehículo y establecer relación bidireccional
+    public void addVehicle(Vehicle vehicle) {
+        if (vehicle != null) {
+            vehicle.setOwner(this);
+            this.vehicles.add(vehicle);
+        }
+    }
+
     @Override
     public String toString() {
-        return "Client{" +
-               "id=" + id +
-               ", name=\"" + name + "\"" +
-               ", identification=" + identification +
-               ", phone=" + phone +
-               ", email=\"" + email + "\"" +
-               ", address=\"" + address + "\"" +
-               "}";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Client{")
+                .append("id=").append(id)
+                .append(", name=\"").append(name).append("\"")
+                .append(", identification=").append(identification)
+                .append(", phone=").append(phone)
+                .append(", email=\"").append(email).append("\"")
+                .append(", address=\"").append(address).append("\"");
+
+        if (vehicles != null && !vehicles.isEmpty()) {
+            sb.append(", vehicles=[");
+            for (int i = 0; i < vehicles.size(); i++) {
+                sb.append(vehicles.get(i).getPlate());
+                if (i < vehicles.size() - 1) {
+                    sb.append(", ");
+                }
+            }
+            sb.append("]");
+        } else {
+            sb.append(", vehicles=[]");
+        }
+
+        sb.append("}");
+        return sb.toString();
     }
+
 }
 
