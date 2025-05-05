@@ -1,38 +1,53 @@
 package com.carMotors.customer.model;
 
-import java.util.*;
+import com.carMotors.maintenance.model.ServiceOrder;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Client {
     private int id;
     private String name;
-    private long identification;
-    private long phone;
+    private String identification;
+    private String phone;
     private String email;
-    private String address;
-    private List<Vehicle> vehicles;
+    private double discountPercentage;
+    private int rewardPoints;
+    private LocalDate purchaseDate;
+    private List<ServiceOrder> serviceHistory;
 
-    // Parameterized constructor
-    public Client(int id, String name, long identification, long phone, String email, String address, List<Vehicle> vehicles) {
+    // Empty constructor
+    public Client() {
+        this.serviceHistory = new ArrayList<>();
+    }
+
+    // Full constructor
+    public Client(int id, String name, String identification, String phone, String email,
+                  double discountPercentage, int rewardPoints) {
         this.id = id;
         this.name = name;
         this.identification = identification;
         this.phone = phone;
         this.email = email;
-        this.address = address;
-        this.vehicles = vehicles != null ? vehicles : new ArrayList<>();
-
-        // Establece la relación bidireccional
-        for (Vehicle vehicle : this.vehicles) {
-            vehicle.setOwner(this);
-        }
+        this.discountPercentage = discountPercentage;
+        this.rewardPoints = rewardPoints;
+        this.serviceHistory = new ArrayList<>();
     }
 
-    // Constructor sin vehículos
-    public Client(int id, String name, long identification, long phone, String email, String address) {
-        this(id, name, identification, phone, email, address, new ArrayList<>());
+    // Compatibility constructor for InvoiceDAO
+    public Client(int id, String name, String identification, String phone, String email, String address) {
+        this.id = id;
+        this.name = name;
+        this.identification = identification;
+        this.phone = phone;
+        this.email = email;
+        this.discountPercentage = 0.0;
+        this.rewardPoints = 0;
+        this.serviceHistory = new ArrayList<>();
     }
 
-    // Getters and Setters
+    // Getters and setters
     public int getId() {
         return id;
     }
@@ -49,19 +64,19 @@ public class Client {
         this.name = name;
     }
 
-    public long getIdentification() {
+    public String getIdentification() {
         return identification;
     }
 
-    public void setIdentification(long identification) {
+    public void setIdentification(String identification) {
         this.identification = identification;
     }
 
-    public long getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(long phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 
@@ -73,57 +88,36 @@ public class Client {
         this.email = email;
     }
 
-    public String getAddress() {
-        return address;
+    public double getDiscountPercentage() {
+        return discountPercentage;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setDiscountPercentage(double discountPercentage) {
+        this.discountPercentage = discountPercentage;
     }
 
-    public List<Vehicle> getVehicles() {
-        return vehicles;
+    public int getRewardPoints() {
+        return rewardPoints;
     }
 
-    public void setVehicles(List<Vehicle> vehicles) {
-        this.vehicles = vehicles;
+    public void setRewardPoints(int rewardPoints) {
+        this.rewardPoints = rewardPoints;
     }
 
-    // Agregar vehículo y establecer relación bidireccional
-    public void addVehicle(Vehicle vehicle) {
-        if (vehicle != null) {
-            vehicle.setOwner(this);
-            this.vehicles.add(vehicle);
-        }
+    public LocalDate getPurchaseDate() {
+        return purchaseDate;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Client{")
-                .append("id=").append(id)
-                .append(", name=\"").append(name).append("\"")
-                .append(", identification=").append(identification)
-                .append(", phone=").append(phone)
-                .append(", email=\"").append(email).append("\"")
-                .append(", address=\"").append(address).append("\"");
+    public void setPurchaseDate(LocalDate purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
 
-        if (vehicles != null && !vehicles.isEmpty()) {
-            sb.append(", vehicles=[");
-            for (int i = 0; i < vehicles.size(); i++) {
-                sb.append(vehicles.get(i).getPlate());
-                if (i < vehicles.size() - 1) {
-                    sb.append(", ");
-                }
-            }
-            sb.append("]");
-        } else {
-            sb.append(", vehicles=[]");
-        }
+    public List<ServiceOrder> getServiceHistory() {
+        return serviceHistory;
+    }
 
-        sb.append("}");
-        return sb.toString();
+    public void setServiceHistory(List<ServiceOrder> serviceHistory) {
+        this.serviceHistory = serviceHistory;
     }
 
 }
-

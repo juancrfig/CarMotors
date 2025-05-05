@@ -1,160 +1,156 @@
 -- Eliminar la base de datos si ya existe
-DROP DATABASE IF EXISTS carMotors;
+DROP DATABASE IF EXISTS railway;
 
 -- Crear nueva base de datos con soporte para UTF-8 extendido
-CREATE DATABASE carMotors CHARACTER SET utf8mb4;
+CREATE DATABASE railway CHARACTER SET utf8mb4;
 
 -- Usar la base de datos
-USE carMotors;
+USE railway;
 
--- Tabla: clients
-CREATE TABLE client (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50),
-    identification BIGINT,
-    phone BIGINT,
-    email VARCHAR(50),
-    address VARCHAR(50),
-    idVehicle int unsigned,
-	FOREIGN KEY (idVehicle) REFERENCES vehicle(id) ON DELETE CASCADE
+-- Table: Clients
+CREATE TABLE Clients (
+    client_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    identification VARCHAR(20) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(100)
 );
 
--- Tabla: vehicles
-CREATE TABLE vehicle (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    brand VARCHAR(20),
-    model VARCHAR(30),
-    plate VARCHAR(10),
-    type ENUM('automobile', 'SUV', 'motorbike')
+-- Table: Vehicles
+CREATE TABLE Vehicles (
+    vehicle_id INT PRIMARY KEY AUTO_INCREMENT,
+    client_id INT,
+    brand VARCHAR(50),
+    model VARCHAR(50),
+    license_plate VARCHAR(20) UNIQUE,
+    type VARCHAR(20),
+    FOREIGN KEY (client_id) REFERENCES Clients(client_id)
 );
 
--- Tabla: employees
-CREATE TABLE employee (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50),
-    phone BIGINT,
-    speciality VARCHAR(20)
+-- Table: Suppliers
+CREATE TABLE Suppliers (
+    supplier_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    tax_id VARCHAR(20),
+    contact VARCHAR(100),
+    visit_frequency VARCHAR(50)
 );
 
--- Tabla: services
-CREATE TABLE service (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    type ENUM('preventive', 'corrective'),
-    description VARCHAR(100),
-    estimatedTime INT,
-    actualTime INT,
-    stateService ENUM('pending', 'underway', 'finished')
+-- Table: Spare Parts
+CREATE TABLE SpareParts (
+    part_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    category ENUM('Mechanical', 'Electrical', 'Bodywork', 'Consumable'),
+    brand VARCHAR(50),
+    model VARCHAR(50),
+    supplier_id INT,
+    stock_quantity INT,
+    minimum_stock_level INT,
+    entry_date DATE,
+    lifespan_days INT,
+    status ENUM('Available', 'ReservedForJob', 'OutOfService'),
+    FOREIGN KEY (supplier_id) REFERENCES Suppliers(supplier_id)
 );
 
--- Tabla: spareServices
-create table spareService(
-	idSpare int unsigned,
-	idService int unsigned,
-	quantity int,
-	FOREIGN KEY (idSpare) REFERENCES sparePart(id) ON DELETE CASCADE,
-    FOREIGN KEY (idService) REFERENCES service(id) ON DELETE CASCADE,
-    PRIMARY KEY (idSpare, idService)
-);
-
--- tabla: employeeService (relacion N:M)
-create table employeeService (
-	idEmployee int unsigned,
-	idService int unsigned,
-	FOREIGN KEY (idEmployee) REFERENCES employee(id) ON DELETE CASCADE,
-    FOREIGN KEY (idService) REFERENCES service(id) ON DELETE CASCADE,
-    PRIMARY KEY (idEmployee, idService)
-);
-
--- Tabla: serviceVehicle (relación N:M)
-CREATE TABLE serviceVehicle (
-    idService INT UNSIGNED,
-    idVehicle INT UNSIGNED,
-    FOREIGN KEY (idService) REFERENCES service(id) ON DELETE CASCADE,
-    FOREIGN KEY (idVehicle) REFERENCES vehicle(id) ON DELETE CASCADE,
-    PRIMARY KEY (idService, idVehicle)
-);
-
--- Tabla: bills
-CREATE TABLE bill (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    idService INT UNSIGNED,
-    idClient int unsigned,
-    issuance DATE,
-    cufe VARCHAR(100),
-    url VARCHAR(100),
-    taxes DECIMAL(10,2),
-    discount double,
-    cost double,
-    FOREIGN KEY (idService) REFERENCES service(id) ON DELETE cascade,
-    FOREIGN KEY (idClient) REFERENCES client(id) ON DELETE CASCADE
-);
-
--- Tabla: providers
-CREATE TABLE provider (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50),
-    identification BIGINT,
-    contact VARCHAR(50),
-    numberVisits INT
-);
-
--- Tabla: spareParts
-CREATE TABLE sparePart (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50),
-    type ENUM('mechanic', 'electric', 'carBody', 'consumable'),
-    brand VARCHAR(20),
-    model VARCHAR(20),
-    cost DOUBLE,
-    lifeSpan INT,
-    state ENUM('available', 'reserved', 'outOfService')
-);
-
--- Tabla: spareProvider (relación N:M)
-CREATE TABLE spareProvider (
-    idSparePart INT UNSIGNED,
-    idProvider INT UNSIGNED,
-    FOREIGN KEY (idSparePart) REFERENCES sparePart(id),
-    FOREIGN KEY (idProvider) REFERENCES provider(id),
-    PRIMARY KEY (idSparePart, idProvider)
-);
-
--- Tabla: orders
-CREATE TABLE orders (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    orderDate DATE,
-    idPackage int unsigned,
-    FOREIGN KEY (idPackage) REFERENCES package(id) ON DELETE CASCADE
-);
-
--- Tabla: packages
-CREATE TABLE package (
-    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    idProvider INT UNSIGNED,
-    idOrder INT UNSIGNED,
-    FOREIGN KEY (idProvider) REFERENCES provider(id) ON DELETE CASCADE
-);
-
--- Tabla: inventory
-CREATE TABLE inventory (
-    idSparePart INT UNSIGNED,
-    idPackage INT UNSIGNED,
-    initialQuantity INT,
-    currentQuantity INT,
-    entryDate DATE,
-    expirationDate DATE,
-    FOREIGN KEY (idSparePart) REFERENCES sparePart(id) ON DELETE CASCADE,
-    FOREIGN KEY (idPackage) REFERENCES package(id) ON DELETE CASCADE,
-    PRIMARY KEY (idSparePart, idPackage)
-);
-
--- Tabla: orderSpare (relación N:M)
-CREATE TABLE orderSpare (
-    idOrder INT UNSIGNED,
-    idSparePart INT UNSIGNED,
+-- Table: Spare Part Batches
+CREATE TABLE Batches (
+    batch_id INT PRIMARY KEY AUTO_INCREMENT,
+    part_id INT,
+    entry_date DATE,
     quantity INT,
-    entryDate DATE,
-    FOREIGN KEY (idOrder) REFERENCES orders(id) ON DELETE CASCADE,
-    FOREIGN KEY (idSparePart) REFERENCES sparePart(id) ON DELETE CASCADE,
-    PRIMARY KEY (idOrder, idSparePart)
+    FOREIGN KEY (part_id) REFERENCES SpareParts(part_id)
 );
+
+-- Table: Maintenance Services
+CREATE TABLE Services (
+    service_id INT PRIMARY KEY AUTO_INCREMENT,
+    type ENUM('Preventive', 'Corrective'),
+    description TEXT,
+    labor_cost DECIMAL(10,2),
+    estimated_time INT
+);
+
+-- Table: Service Orders (record of performed maintenance)
+CREATE TABLE ServiceOrders (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    vehicle_id INT,
+    service_id INT,
+    status ENUM('Pending', 'In progress', 'Completed', 'Delivered'),
+    start_date DATE,
+    end_date DATE,
+    FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id),
+    FOREIGN KEY (service_id) REFERENCES Services(service_id)
+);
+
+-- Table: Spare Parts Used in Services
+CREATE TABLE UsedParts (
+    used_part_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    part_id INT,
+    quantity INT,
+    batch_id INT,
+    FOREIGN KEY (order_id) REFERENCES ServiceOrders(order_id),
+    FOREIGN KEY (part_id) REFERENCES SpareParts(part_id),
+    FOREIGN KEY (batch_id) REFERENCES Batches(batch_id)
+);
+
+-- Table: Technicians
+CREATE TABLE Technicians (
+    technician_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100),
+    specialty VARCHAR(100)
+);
+
+-- Table: Assignment of Technicians to Orders
+CREATE TABLE Order_Technicians (
+    order_id INT,
+    technician_id INT,
+    PRIMARY KEY (order_id, technician_id),
+    FOREIGN KEY (order_id) REFERENCES ServiceOrders(order_id),
+    FOREIGN KEY (technician_id) REFERENCES Technicians(technician_id)
+);
+
+-- Table: Invoices
+CREATE TABLE Invoices (
+    invoice_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_id INT,
+    issue_date DATE,
+    subtotal DECIMAL(10,2),
+    tax DECIMAL(10,2),
+    total DECIMAL(10,2),
+    cufe VARCHAR(100),
+    qr_url TEXT,
+    FOREIGN KEY (order_id) REFERENCES ServiceOrders(order_id)
+);
+
+-- Table: Special Activities
+CREATE TABLE SpecialActivities (
+    activity_id INT PRIMARY KEY AUTO_INCREMENT,
+    type ENUM('Campaign', 'Inspection'),
+    description TEXT,
+    start_date DATE,
+    end_date DATE
+);
+
+-- Table: Participation of Vehicles in Special Activities
+CREATE TABLE VehicleActivities (
+    activity_id INT,
+    vehicle_id INT,
+    result VARCHAR(100), -- Approved, Requires repairs, Rejected
+    PRIMARY KEY (activity_id, vehicle_id),
+    FOREIGN KEY (activity_id) REFERENCES SpecialActivities(activity_id),
+    FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id)
+);
+
+-- Table: Supplier Evaluations
+CREATE TABLE SupplierEvaluations (
+    evaluation_id INT PRIMARY KEY AUTO_INCREMENT,
+    supplier_id INT,
+    punctuality INT,
+    quality INT,
+    cost INT,
+    comment TEXT,
+    date DATE,
+    FOREIGN KEY (supplier_id) REFERENCES Suppliers(supplier_id)
+);
+

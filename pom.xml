@@ -40,6 +40,13 @@
       <version>3.0.0</version> <!-- Usa la versión más reciente si está disponible -->
     </dependency>
 
+    <!-- Dependencia de FormDev JFoenix (si es lo que buscas) -->
+    <dependency>
+      <groupId>com.jfoenix</groupId>
+      <artifactId>jfoenix</artifactId>
+      <version>9.0.10</version> <!-- Asegúrate de usar la versión más reciente -->
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -108,8 +115,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>15</source>
+          <target>15</target>
         </configuration>
       </plugin>
     </plugins>

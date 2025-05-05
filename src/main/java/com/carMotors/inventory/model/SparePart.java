@@ -3,35 +3,32 @@ package com.carMotors.inventory.model;
 public class SparePart {
     private int id;
     private String name;
-    private SparePartType type;
+    private String type;
     private String brand;
     private String model;
-    private double cost;
-    private int lifeSpan; // Assuming this is in days or a relevant unit
-    private SparePartState state;
+    private int supplierId;
+    private int stockQuantity;
+    private int minimumStockLevel;
+    private String entryDate;
+    private int usefulLifeDays;
+    private String status;
 
-    public enum SparePartType {
-        MECHANIC, ELECTRIC, CARBODY, CONSUMABLE
-    }
+    public SparePart() {}
 
-    public enum SparePartState {
-        AVAILABLE, RESERVED, OUTOFSERVICE
-    }
-
-    // Default constructor
-    public SparePart() {
-    }
-
-    // Parameterized constructor
-    public SparePart(int id, String name, SparePartType type, String brand, String model, double cost, int lifeSpan, SparePartState state) {
+    public SparePart(int id, String name, String type, String brand, String model,
+                     int supplierId, int stockQuantity, int minimumStockLevel,
+                     String entryDate, int usefulLifeDays, String status) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.brand = brand;
         this.model = model;
-        this.cost = cost;
-        this.lifeSpan = lifeSpan;
-        this.state = state;
+        this.supplierId = supplierId;
+        this.stockQuantity = stockQuantity;
+        this.minimumStockLevel = minimumStockLevel;
+        this.entryDate = entryDate;
+        this.usefulLifeDays = usefulLifeDays;
+        this.status = status;
     }
 
     // Getters and Setters
@@ -51,11 +48,11 @@ public class SparePart {
         this.name = name;
     }
 
-    public SparePartType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(SparePartType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -75,42 +72,52 @@ public class SparePart {
         this.model = model;
     }
 
-    public double getCost() {
-        return cost;
+    public int getSupplierId() {
+        return supplierId;
     }
 
-    public void setCost(double cost) {
-        this.cost = cost;
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
     }
 
-    public int getLifeSpan() {
-        return lifeSpan;
+    public int getStockQuantity() {
+        return stockQuantity;
     }
 
-    public void setLifeSpan(int lifeSpan) {
-        this.lifeSpan = lifeSpan;
+    public void setStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
 
-    public SparePartState getState() {
-        return state;
+    public int getMinimumStockLevel() {
+        return minimumStockLevel;
     }
 
-    public void setState(SparePartState state) {
-        this.state = state;
+    public void setMinimumStockLevel(int minimumStockLevel) {
+        this.minimumStockLevel = minimumStockLevel;
     }
 
-    @Override
-    public String toString() {
-        return "SparePart{" +
-               "id=" + id +
-               ", name=\"" + name + "\"" +
-               ", type=" + type +
-               ", brand=\"" + brand + "\"" +
-               ", model=\"" + model + "\"" +
-               ", cost=" + cost +
-               ", lifeSpan=" + lifeSpan +
-               ", state=" + state +
-               "}";
+    public String getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(String entryDate) {
+        this.entryDate = entryDate;
+    }
+
+    public int getUsefulLifeDays() {
+        return usefulLifeDays;
+    }
+
+    public void setUsefulLifeDays(int usefulLifeDays) {
+        this.usefulLifeDays = usefulLifeDays;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
 

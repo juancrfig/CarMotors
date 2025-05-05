@@ -1,35 +1,26 @@
 package com.carMotors.customer.model;
 
-import com.carMotors.customer.model.Client;
-
 public class Vehicle {
     private int id;
-    private String plate;
+    private int clientId;
     private String brand;
     private String model;
-    private VehicleType type;
-    private Client owner;
+    private String licensePlate;
+    private String type;
 
-    public enum VehicleType {
-        AUTOMOBILE, SUV, MOTORBIKE
-    }
+    public Vehicle() {}
 
-    // Constructor completo
-    public Vehicle(int id, String plate, String brand, String model, VehicleType type, Client owner) {
+    public Vehicle(int id, int clientId, String brand, String model, String licensePlate, String type) {
         this.id = id;
-        this.plate = plate;
+        this.clientId = clientId;
         this.brand = brand;
         this.model = model;
+        this.licensePlate = licensePlate;
         this.type = type;
-        this.owner = owner;
     }
 
-    // Constructor sin dueño
-    public Vehicle(int id, String plate, String brand, String model, VehicleType type) {
-        this(id, plate, brand, model, type, null);
-    }
+    // Getters and Setters
 
-    // Getters and setters
     public int getId() {
         return id;
     }
@@ -38,12 +29,12 @@ public class Vehicle {
         this.id = id;
     }
 
-    public String getPlate() {
-        return plate;
+    public int getClientId() {
+        return clientId;
     }
 
-    public void setPlate(String plate) {
-        this.plate = plate;
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
     }
 
     public String getBrand() {
@@ -62,34 +53,19 @@ public class Vehicle {
         this.model = model;
     }
 
-    public VehicleType getType() {
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
+    public String getType() {
         return type;
     }
 
-    public void setType(VehicleType type) {
+    public void setType(String type) {
         this.type = type;
     }
-
-    public Client getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Client owner) {
-        this.owner = owner;
-    }
-
-    @Override
-    public String toString() {
-        return "Vehicle{" +
-                "id=" + id +
-                ", plate='" + plate + '\'' +
-                ", brand='" + brand + '\'' +
-                ", model='" + model + '\'' +
-                ", type=" + type +
-                ", owner=" + (owner != null ? owner.getName() : "No Owner") +
-                '}';
-    }
-
 }
-
-
