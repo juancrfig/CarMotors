@@ -1,66 +1,51 @@
 package com.carMotors.core.util;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseManager {
 
-    // Database connection details - Replace with your actual credentials and URL
-    // Consider using a configuration file or environment variables for sensitive data
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/carMotors?useSSL=false&serverTimezone=UTC";
-    private static final String DB_USER = "your_username"; // FIXME: Replace with actual username
-    private static final String DB_PASSWORD = "your_password"; // FIXME: Replace with actual password
+    private static final Dotenv dotenv = Dotenv.configure().load();
+
+    private static final String DB_URL = dotenv.get("DB_URL");
+    private static final String DB_USER = dotenv.get("DB_USER");
+    private static final String DB_PASSWORD = dotenv.get("DB_PASSWORD");
 
     private static Connection connection = null;
 
-    // Private constructor to prevent instantiation
     private DatabaseManager() {}
 
-    /**
-     * Gets the singleton database connection.
-     * Establishes the connection if it doesn't exist or is closed.
-     *
-     * @return The database connection.
-     * @throws SQLException if a database access error occurs.
-     */
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             try {
-                // Ensure the MySQL JDBC driver is loaded
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                
-                // Establish the connection
                 connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-                System.out.println("Database connection established successfully.");
+                System.out.println("✅ Conexión exitosa a la base de datos.");
             } catch (ClassNotFoundException e) {
-                System.err.println("MySQL JDBC Driver not found.");
+                System.err.println("❌ Driver JDBC de MySQL no encontrado.");
                 throw new SQLException("MySQL JDBC Driver not found.", e);
             } catch (SQLException e) {
-                System.err.println("Failed to connect to the database: " + e.getMessage());
-                throw e; // Re-throw the exception to be handled by the caller
+                System.err.println("❌ Falló la conexión a la base de datos: " + e.getMessage());
+                throw e;
             }
         }
         return connection;
     }
 
-    /**
-     * Closes the database connection if it is open.
-     */
     public static void closeConnection() {
         if (connection != null) {
             try {
                 if (!connection.isClosed()) {
                     connection.close();
-                    System.out.println("Database connection closed.");
+                    System.out.println("🔒 Conexión cerrada.");
                 }
             } catch (SQLException e) {
-                System.err.println("Failed to close the database connection: " + e.getMessage());
+                System.err.println("❌ Error al cerrar la conexión: " + e.getMessage());
             }
-            connection = null; // Ensure we get a new connection next time
+            connection = null;
         }
     }
-    
-    // Optional: Add methods for transaction management (commit, rollback) if needed
 }
-
