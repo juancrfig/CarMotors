@@ -12,6 +12,12 @@ import com.carMotors.customer.view.VehicleView;
 import com.carMotors.inventory.controller.SparePartController;
 import com.carMotors.inventory.model.SparePartDAO;
 import com.carMotors.inventory.view.SparePartView;
+import com.carMotors.maintenance.controller.ServiceController;
+import com.carMotors.maintenance.controller.ServiceOrderController;
+import com.carMotors.maintenance.model.ServiceDAO;
+import com.carMotors.maintenance.model.ServiceOrderDAO;
+import com.carMotors.maintenance.view.ServiceView;
+import com.carMotors.maintenance.view.ServiceOrderView;
 import com.carMotors.supplier.controller.SupplierController;
 import com.carMotors.supplier.model.SupplierDAO;
 import com.carMotors.supplier.view.SupplierView;
@@ -19,7 +25,6 @@ import com.carMotors.supplier.view.SupplierView;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class MainMenuView extends JFrame {
@@ -36,10 +41,14 @@ public class MainMenuView extends JFrame {
     private VehicleController vehicleController;
     private SparePartController sparePartController;
     private SupplierController supplierController;
+    private ServiceController serviceController;
+    private ServiceOrderController serviceOrderController;
     private IClienteDAO clientDAO;
     private IVehicleDAO vehicleDAO;
     private SparePartDAO sparePartDAO;
     private SupplierDAO supplierDAO;
+    private ServiceDAO serviceDAO;
+    private ServiceOrderDAO serviceOrderDAO;
     private Connection connection;
 
     public MainMenuView() {
@@ -57,19 +66,23 @@ public class MainMenuView extends JFrame {
             vehicleDAO = new VehicleDAO();
             sparePartDAO = new SparePartDAO(connection);
             supplierDAO = new SupplierDAO(connection);
+            serviceDAO = new ServiceDAO(connection);
+            serviceOrderDAO = new ServiceOrderDAO(connection, serviceDAO);
 
             // Inicializa Controllers
             clientController = new ClientController(clientDAO, this);
             vehicleController = new VehicleController(vehicleDAO);
             sparePartController = new SparePartController(sparePartDAO, supplierDAO);
-            supplierController = new SupplierController(supplierDAO); // ← Ahora recibe el DAO, no la conexión
+            supplierController = new SupplierController(supplierDAO);
+            serviceController = new ServiceController(serviceDAO);
+            serviceOrderController = new ServiceOrderController(serviceOrderDAO, vehicleDAO, serviceDAO);
 
             // Inicializa las Vistas
             clientPanel = new ClientePanel(clientController);
             vehicleView = new VehicleView(vehicleController);
             sparePartView = new SparePartView(sparePartController);
             supplierView = new SupplierView(supplierController);
-            maintenancePanel = createPlaceholderPanel("Maintenance and Repairs - Under Construction");
+            maintenancePanel = createMaintenancePanel();
             reportsPanel = createPlaceholderPanel("Reports and Statistics - Under Construction");
 
             // Configura las pestañas
@@ -87,6 +100,17 @@ public class MainMenuView extends JFrame {
             JOptionPane.showMessageDialog(this, "Database connection error: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private JPanel createMaintenancePanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JTabbedPane maintenanceTabs = new JTabbedPane();
+        ServiceOrderView serviceOrderView = new ServiceOrderView(serviceOrderController, serviceController, vehicleDAO);
+        ServiceView serviceView = new ServiceView(serviceController, serviceOrderView);
+        maintenanceTabs.addTab("Services", serviceView);
+        maintenanceTabs.addTab("Service Orders", serviceOrderView);
+        panel.add(maintenanceTabs, BorderLayout.CENTER);
+        return panel;
     }
 
     // Paneles de texto temporal

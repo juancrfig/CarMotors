@@ -3,26 +3,30 @@ package com.carMotors.maintenance.model;
 import java.sql.Date;
 
 public class ServiceOrder {
-
     private int id;
     private int vehicleId;
     private int serviceId;
     private String status;
     private Date startDate;
     private Date endDate;
+    private Integer clientId; // Opcional, derivado de Vehicles
+    private Service service; // Referencia al servicio asociado
 
     public ServiceOrder() {}
 
-    public ServiceOrder(int id, int vehicleId, int serviceId, String status, Date startDate, Date endDate) {
+    public ServiceOrder(int id, int vehicleId, int serviceId, String status, Date startDate, Date endDate,
+                        Integer clientId, Service service) {
         this.id = id;
         this.vehicleId = vehicleId;
         this.serviceId = serviceId;
         this.status = status;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.clientId = clientId;
+        this.service = service;
     }
 
-    // Getters and Setters
+    // Getters y setters
     public int getId() {
         return id;
     }
@@ -71,21 +75,67 @@ public class ServiceOrder {
         this.endDate = endDate;
     }
 
-    // Unimplemented methods
-    public void setClientId(int clientId) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public Integer getClientId() {
+        return clientId;
     }
 
-    public void setMaintenanceType(String maintenanceType) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
+    }
+
+    public Service getService() {
+        return service;
+    }
+
+    public void setService(Service service) {
+        this.service = service;
+        if (service != null && service.getId() != 0) {
+            this.serviceId = service.getId();
+        }
+    }
+
+    // Métodos delegados para propiedades del servicio
+    public String getMaintenanceType() {
+        return service != null ? service.getType() : null;
+    }
+
+    public void setMaintenanceType(String type) {
+        if (service == null) {
+            service = new Service();
+        }
+        service.setType(type);
+    }
+
+    public String getDescription() {
+        return service != null ? service.getDescription() : null;
     }
 
     public void setDescription(String description) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        if (service == null) {
+            service = new Service();
+        }
+        service.setDescription(description);
     }
 
-    public void setLaborCost(double laborCost) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public Double getLaborCost() {
+        return service != null ? service.getLaborCost() : null;
+    }
+
+    public void setLaborCost(Double laborCost) {
+        if (service == null) {
+            service = new Service();
+        }
+        service.setLaborCost(laborCost != null ? laborCost : 0.0);
+    }
+
+    public Integer getEstimatedTime() {
+        return service != null ? service.getEstimatedTime() : null;
+    }
+
+    public void setEstimatedTime(Integer estimatedTime) {
+        if (service == null) {
+            service = new Service();
+        }
+        service.setEstimatedTime(estimatedTime != null ? estimatedTime : 0);
     }
 }
-
