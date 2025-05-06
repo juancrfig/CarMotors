@@ -8,6 +8,8 @@ import com.carMotors.maintenance.model.ServiceOrder;
 import com.carMotors.customer.model.IVehicleDAO;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.Date;
@@ -15,7 +17,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ServiceOrderView extends JPanel {
     private ServiceOrderController serviceOrderController;
@@ -29,11 +30,35 @@ public class ServiceOrderView extends JPanel {
     private DefaultTableModel tableModel;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
+    // --- Color Palette ---
+    private static final Color COLOR_BACKGROUND = new Color(0x36, 0x45, 0x4F); // Charcoal
+    private static final Color COLOR_COMPONENT_BG = new Color(0xA9, 0xA9, 0xA9); // Dark Gray
+    private static final Color COLOR_ACCENT = new Color(0x46, 0x82, 0xB4); // Steel Blue
+    private static final Color COLOR_TEXT_LIGHT = Color.WHITE;
+    private static final Color COLOR_TEXT_DARK = new Color(0x36, 0x45, 0x4F); // Charcoal
+    private static final Color COLOR_MENU_BUTTON_BG = new Color(0xFA, 0xFA, 0xD2); // LightGoldenrodYellow
+    private static final Color COLOR_ACTION_BUTTON_BG = COLOR_ACCENT; // Steel Blue
+    private static final Color COLOR_ACTION_BUTTON_FG = COLOR_TEXT_LIGHT; // White
+
+    // --- Fonts ---
+    private static final Font FONT_LABEL = new Font("SansSerif", Font.PLAIN, 13);
+    private static final Font FONT_BUTTON = new Font("SansSerif", Font.BOLD, 14);
+    private static final Font FONT_TEXT_AREA = new Font("Consolas", Font.PLAIN, 13);
+    private static final Font FONT_TITLE = new Font("SansSerif", Font.BOLD, 14);
+
+    // --- Borders ---
+    private static final Border BORDER_PADDING = new EmptyBorder(15, 15, 15, 15);
+    private static final Border BORDER_COMPONENT = BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(COLOR_ACCENT, 1),
+            new EmptyBorder(3, 5, 3, 5)
+    );
+
     public ServiceOrderView(ServiceOrderController serviceOrderController, ServiceController serviceController, IVehicleDAO vehicleDAO) {
         this.serviceOrderController = serviceOrderController;
         this.serviceController = serviceController;
         this.vehicleDAO = vehicleDAO;
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(0, 10));
+        setBackground(COLOR_BACKGROUND);
         initializeUI();
         loadOrders();
         loadVehicles();
@@ -41,87 +66,27 @@ public class ServiceOrderView extends JPanel {
     }
 
     private void initializeUI() {
-        // Panel del formulario
+        // Form Panel
         JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(COLOR_BACKGROUND);
+        formPanel.setBorder(BORDER_PADDING);
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campos del formulario
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        formPanel.add(new JLabel("Order ID:"), gbc);
-        gbc.gridx = 1;
-        idField = new JTextField(10);
+        // Add Fields
+        addFormField(formPanel, "Order ID:", idField = new JTextField(10), 0, 0);
         idField.setEditable(false);
-        formPanel.add(idField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        formPanel.add(new JLabel("Vehicle ID:"), gbc);
-        gbc.gridx = 1;
-        vehicleComboBox = new JComboBox<>();
-        formPanel.add(vehicleComboBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        formPanel.add(new JLabel("Service ID:"), gbc);
-        gbc.gridx = 1;
-        serviceComboBox = new JComboBox<>();
-        formPanel.add(serviceComboBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        formPanel.add(new JLabel("Client ID:"), gbc);
-        gbc.gridx = 1;
-        clientIdField = new JTextField(10);
+        addFormField(formPanel, "Vehicle ID:", vehicleComboBox = new JComboBox<>(), 0, 1);
+        addFormField(formPanel, "Service ID:", serviceComboBox = new JComboBox<>(), 0, 2);
+        addFormField(formPanel, "Client ID:", clientIdField = new JTextField(10), 0, 3);
         clientIdField.setEditable(false);
-        formPanel.add(clientIdField, gbc);
+        addFormField(formPanel, "Status:", statusComboBox = new JComboBox<>(new String[]{"Pending", "In progress", "Completed", "Delivered"}), 0, 4);
+        addFormField(formPanel, "Start Date (YYYY-MM-DD):", startDateField = new JTextField(10), 0, 5);
+        addFormField(formPanel, "End Date (YYYY-MM-DD):", endDateField = new JTextField(10), 0, 6);
 
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        formPanel.add(new JLabel("Status:"), gbc);
-        gbc.gridx = 1;
-        statusComboBox = new JComboBox<>(new String[]{"Pending", "In progress", "Completed", "Delivered"});
-        formPanel.add(statusComboBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        formPanel.add(new JLabel("Start Date (YYYY-MM-DD):"), gbc);
-        gbc.gridx = 1;
-        startDateField = new JTextField(10);
-        formPanel.add(startDateField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        formPanel.add(new JLabel("End Date (YYYY-MM-DD):"), gbc);
-        gbc.gridx = 1;
-        endDateField = new JTextField(10);
-        formPanel.add(endDateField, gbc);
-
-        // Botones
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        JButton addButton = new JButton("Add");
-        JButton updateButton = new JButton("Update");
-        JButton deleteButton = new JButton("Delete");
-        JButton clearButton = new JButton("Clear");
-
-        addButton.addActionListener(e -> addOrder());
-        updateButton.addActionListener(e -> updateOrder());
-        deleteButton.addActionListener(e -> deleteOrder());
-        clearButton.addActionListener(e -> clearForm());
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(updateButton);
-        buttonPanel.add(deleteButton);
-        buttonPanel.add(clearButton);
-
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        gbc.gridwidth = 2;
-        formPanel.add(buttonPanel, gbc);
-
-        // Tabla de órdenes
+        // Table
         String[] columnNames = {"Order ID", "Vehicle ID", "Service ID", "Client ID", "Status", "Start Date", "End Date", "Service Type", "Description", "Labor Cost"};
         tableModel = new DefaultTableModel(columnNames, 0);
         orderTable = new JTable(tableModel);
@@ -131,14 +96,36 @@ public class ServiceOrderView extends JPanel {
                 populateForm();
             }
         });
-
+        styleTable(orderTable);
         JScrollPane tableScrollPane = new JScrollPane(orderTable);
+        tableScrollPane.getViewport().setBackground(COLOR_COMPONENT_BG);
 
-        // Añadir componentes al panel principal
+        // Bottom Menu Panel
+        JPanel bottomMenuPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        bottomMenuPanel.setBackground(COLOR_BACKGROUND);
+        bottomMenuPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_COMPONENT_BG));
+
+        JButton addButton = createMenuButton("➕ Add");
+        JButton updateButton = createMenuButton("✏️ Update");
+        JButton deleteButton = createMenuButton("🗑️ Delete");
+        JButton clearButton = createMenuButton("🧹 Clear");
+
+        addButton.addActionListener(e -> addOrder());
+        updateButton.addActionListener(e -> updateOrder());
+        deleteButton.addActionListener(e -> deleteOrder());
+        clearButton.addActionListener(e -> clearForm());
+
+        bottomMenuPanel.add(addButton);
+        bottomMenuPanel.add(updateButton);
+        bottomMenuPanel.add(deleteButton);
+        bottomMenuPanel.add(clearButton);
+
+        // Add Panels
         add(formPanel, BorderLayout.NORTH);
         add(tableScrollPane, BorderLayout.CENTER);
+        add(bottomMenuPanel, BorderLayout.SOUTH);
 
-        // Actualizar clientId cuando se seleccione un vehículo
+        // Update clientId when vehicle is selected
         vehicleComboBox.addActionListener(e -> updateClientId());
     }
 
@@ -263,7 +250,6 @@ public class ServiceOrderView extends JPanel {
         if (vehicleId != null) {
             try {
                 Integer clientId = serviceOrderController.getClientIdByVehicleId(vehicleId);
-                System.out.println("Vehicle ID: " + vehicleId + ", Client ID: " + clientId); // Log para depuración
                 clientIdField.setText(clientId != null ? clientId.toString() : "");
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, "Error loading client ID: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -296,5 +282,66 @@ public class ServiceOrderView extends JPanel {
             Object endDate = tableModel.getValueAt(selectedRow, 6);
             endDateField.setText(endDate != null ? endDate.toString() : "");
         }
+    }
+
+    // Helper methods
+    private void addFormField(JPanel panel, String labelText, JComponent field, int gridx, int gridy) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = gridx;
+        gbc.gridy = gridy;
+        gbc.weightx = 0.0;
+        JLabel label = new JLabel(labelText);
+        styleLabel(label);
+        panel.add(label, gbc);
+
+        gbc.gridx = gridx + 1;
+        gbc.weightx = 1.0;
+        if (field instanceof JTextField) {
+            styleTextField((JTextField) field);
+        } else if (field instanceof JComboBox) {
+            styleComboBox((JComboBox<?>) field);
+        }
+        panel.add(field, gbc);
+    }
+
+    private JButton createMenuButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setBackground(COLOR_MENU_BUTTON_BG);
+        btn.setForeground(COLOR_TEXT_DARK);
+        btn.setFont(FONT_BUTTON);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(150, 35));
+        return btn;
+    }
+
+    private void styleTextField(JTextField field) {
+        field.setBackground(COLOR_COMPONENT_BG);
+        field.setForeground(COLOR_TEXT_DARK);
+        field.setFont(FONT_LABEL);
+        field.setBorder(BORDER_COMPONENT);
+        field.setCaretColor(COLOR_TEXT_DARK);
+    }
+
+    private void styleComboBox(JComboBox<?> comboBox) {
+        comboBox.setBackground(COLOR_COMPONENT_BG);
+        comboBox.setForeground(COLOR_TEXT_DARK);
+        comboBox.setFont(FONT_LABEL);
+    }
+
+    private void styleLabel(JLabel label) {
+        label.setForeground(COLOR_TEXT_LIGHT);
+        label.setFont(FONT_LABEL);
+    }
+
+    private void styleTable(JTable table) {
+        table.setBackground(COLOR_COMPONENT_BG);
+        table.setForeground(COLOR_TEXT_DARK);
+        table.setFont(FONT_TEXT_AREA);
+        table.setGridColor(COLOR_ACCENT);
+        table.setSelectionBackground(COLOR_ACCENT);
+        table.setSelectionForeground(COLOR_TEXT_LIGHT);
     }
 }

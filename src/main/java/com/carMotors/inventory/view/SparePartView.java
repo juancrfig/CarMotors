@@ -4,6 +4,8 @@ import com.carMotors.inventory.controller.SparePartController;
 import com.carMotors.inventory.model.SparePart;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,158 +18,91 @@ public class SparePartView extends JPanel {
     private JComboBox<String> statusComboBox;
     private JTextArea sparePartsArea;
     private JButton addButton, updateButton, deleteButton, viewAllButton;
-    private Integer selectedSparePartId; // Almacena el ID del repuesto seleccionado
+    private Integer selectedSparePartId;
+
+    // --- Color Palette ---
+    private static final Color COLOR_BACKGROUND = new Color(0x36, 0x45, 0x4F); // Charcoal
+    private static final Color COLOR_COMPONENT_BG = new Color(0xA9, 0xA9, 0xA9); // Dark Gray
+    private static final Color COLOR_ACCENT = new Color(0x46, 0x82, 0xB4); // Steel Blue
+    private static final Color COLOR_TEXT_LIGHT = Color.WHITE;
+    private static final Color COLOR_TEXT_DARK = new Color(0x36, 0x45, 0x4F); // Charcoal
+    private static final Color COLOR_MENU_BUTTON_BG = new Color(0xFA, 0xFA, 0xD2); // LightGoldenrodYellow
+    private static final Color COLOR_ACTION_BUTTON_BG = COLOR_ACCENT; // Steel Blue
+    private static final Color COLOR_ACTION_BUTTON_FG = COLOR_TEXT_LIGHT; // White
+
+    // --- Fonts ---
+    private static final Font FONT_LABEL = new Font("SansSerif", Font.PLAIN, 13);
+    private static final Font FONT_BUTTON = new Font("SansSerif", Font.BOLD, 14);
+    private static final Font FONT_TEXT_AREA = new Font("Consolas", Font.PLAIN, 13);
+    private static final Font FONT_TITLE = new Font("SansSerif", Font.BOLD, 14);
+
+    // --- Borders ---
+    private static final Border BORDER_PADDING = new EmptyBorder(15, 15, 15, 15);
+    private static final Border BORDER_COMPONENT = BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(COLOR_ACCENT, 1),
+            new EmptyBorder(3, 5, 3, 5)
+    );
 
     public SparePartView(SparePartController controller) {
         this.controller = controller;
         this.selectedSparePartId = null;
 
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(0, 10));
+        setBackground(COLOR_BACKGROUND);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
+        // Form Panel
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(COLOR_BACKGROUND);
+        formPanel.setBorder(BORDER_PADDING);
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Labels and Fields
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Name:"), gbc);
+        // Add Fields
+        addFormField(formPanel, "Name:", nameField = new JTextField(), 0, 0);
+        addFormField(formPanel, "Type:", typeComboBox = new JComboBox<>(new String[]{"Mechanical", "Electrical", "Bodywork", "Consumable"}), 0, 1);
+        addFormField(formPanel, "Brand:", brandField = new JTextField(), 0, 2);
+        addFormField(formPanel, "Model:", modelField = new JTextField(), 0, 3);
+        addFormField(formPanel, "Supplier ID:", supplierIdField = new JTextField(), 0, 4);
+        addFormField(formPanel, "Stock Quantity:", stockQuantityField = new JTextField(), 0, 5);
+        addFormField(formPanel, "Min Stock Level:", minStockLevelField = new JTextField(), 0, 6);
+        addFormField(formPanel, "Entry Date (YYYY-MM-DD):", entryDateField = new JTextField(), 0, 7);
+        addFormField(formPanel, "Useful Life (days):", usefulLifeDaysField = new JTextField(), 0, 8);
+        addFormField(formPanel, "Status:", statusComboBox = new JComboBox<>(new String[]{"Available", "ReservedForJob", "OutOfService"}), 0, 9);
 
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        nameField = new JTextField();
-        panel.add(nameField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Type:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        String[] types = {"Mechanical", "Electrical", "Bodywork", "Consumable"};
-        typeComboBox = new JComboBox<>(types);
-        panel.add(typeComboBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Brand:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        brandField = new JTextField();
-        panel.add(brandField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Model:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        modelField = new JTextField();
-        panel.add(modelField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Supplier ID:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        supplierIdField = new JTextField();
-        panel.add(supplierIdField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Stock Quantity:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        stockQuantityField = new JTextField();
-        panel.add(stockQuantityField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Min Stock Level:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        minStockLevelField = new JTextField();
-        panel.add(minStockLevelField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Entry Date: (YYYY-MM-DD)"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        entryDateField = new JTextField();
-        panel.add(entryDateField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 8;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Useful Life (days):"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        usefulLifeDaysField = new JTextField();
-        panel.add(usefulLifeDaysField, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 9;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel("Status:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        String[] statuses = {"Available", "ReservedForJob", "OutOfService"};
-        statusComboBox = new JComboBox<>(statuses);
-        panel.add(statusComboBox, gbc);
-
-        // Buttons
+        // Text Area
         gbc.gridx = 0;
         gbc.gridy = 10;
-        gbc.weightx = 0.0;
-        gbc.fill = GridBagConstraints.NONE;
-        addButton = new JButton("Agregar");
-        panel.add(addButton, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 10;
-        updateButton = new JButton("Actualizar");
-        panel.add(updateButton, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 11;
-        deleteButton = new JButton("Eliminar");
-        panel.add(deleteButton, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 11;
-        viewAllButton = new JButton("Ver Todos");
-        panel.add(viewAllButton, gbc);
-
-        // Text Area for displaying spare parts
-        gbc.gridx = 0;
-        gbc.gridy = 12;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weighty = 1.0;
         sparePartsArea = new JTextArea(10, 40);
         sparePartsArea.setEditable(false);
-        sparePartsArea.setText("Haga clic en 'Ver Todos' para listar los repuestos.\nSeleccione un repuesto haciendo clic para editar o eliminar.");
-        panel.add(new JScrollPane(sparePartsArea), gbc);
+        sparePartsArea.setText("Click 'View All' to list spare parts.\nSelect a spare part by clicking to edit or delete.");
+        styleTextArea(sparePartsArea);
+        JScrollPane scrollPane = new JScrollPane(sparePartsArea);
+        scrollPane.getViewport().setBackground(COLOR_COMPONENT_BG);
+        formPanel.add(scrollPane, gbc);
 
-        add(panel, BorderLayout.CENTER);
+        // Bottom Menu Panel
+        JPanel bottomMenuPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        bottomMenuPanel.setBackground(COLOR_BACKGROUND);
+        bottomMenuPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_COMPONENT_BG));
+
+        addButton = createMenuButton("➕ Add");
+        updateButton = createMenuButton("✏️ Update");
+        deleteButton = createMenuButton("🗑️ Delete");
+        viewAllButton = createMenuButton("📋 View All");
+
+        bottomMenuPanel.add(addButton);
+        bottomMenuPanel.add(updateButton);
+        bottomMenuPanel.add(deleteButton);
+        bottomMenuPanel.add(viewAllButton);
+
+        // Add Panels
+        add(formPanel, BorderLayout.CENTER);
+        add(bottomMenuPanel, BorderLayout.SOUTH);
 
         // Action Listeners
         addButton.addActionListener(e -> {
@@ -178,14 +113,13 @@ public class SparePartView extends JPanel {
                 sparePart.setBrand(brandField.getText());
                 sparePart.setModel(modelField.getText());
                 int supplierId = Integer.parseInt(supplierIdField.getText());
-                // Verificar si el proveedor existe
                 try {
                     if (!controller.supplierExists(supplierId)) {
-                        JOptionPane.showMessageDialog(this, "Error: El ID Proveedor " + supplierId + " no existe en la base de datos.");
+                        JOptionPane.showMessageDialog(this, "Error: Supplier ID " + supplierId + " does not exist in the database.");
                         return;
                     }
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al verificar el proveedor: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error checking supplier: " + ex.getMessage());
                     return;
                 }
                 sparePart.setSupplierId(supplierId);
@@ -194,26 +128,25 @@ public class SparePartView extends JPanel {
                 sparePart.setEntryDate(entryDateField.getText());
                 sparePart.setUsefulLifeDays(Integer.parseInt(usefulLifeDaysField.getText()));
                 sparePart.setStatus((String) statusComboBox.getSelectedItem());
-                // Agregar el repuesto
                 try {
                     controller.addSparePart(sparePart);
-                    JOptionPane.showMessageDialog(this, "Repuesto agregado con ID: " + sparePart.getId());
+                    JOptionPane.showMessageDialog(this, "Spare part added with ID: " + sparePart.getId());
                     clearFields();
-                    selectedSparePartId = null; // Resetear selección
+                    selectedSparePartId = null;
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al agregar repuesto: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error adding spare part: " + ex.getMessage());
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Error: Por favor ingrese valores numéricos válidos para Supplier ID, Stock Quantity, Min Stock Level y Useful Life.");
+                JOptionPane.showMessageDialog(this, "Error: Please enter valid numeric values for Supplier ID, Stock Quantity, Min Stock Level, and Useful Life.");
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Unexpected error: " + ex.getMessage());
             }
         });
 
         updateButton.addActionListener(e -> {
             try {
                 if (selectedSparePartId == null) {
-                    JOptionPane.showMessageDialog(this, "Error: Por favor seleccione un repuesto de la lista primero.");
+                    JOptionPane.showMessageDialog(this, "Error: Please select a spare part from the list first.");
                     return;
                 }
                 SparePart sparePart = new SparePart();
@@ -223,14 +156,13 @@ public class SparePartView extends JPanel {
                 sparePart.setBrand(brandField.getText());
                 sparePart.setModel(modelField.getText());
                 int supplierId = Integer.parseInt(supplierIdField.getText());
-                // Verificar si el proveedor existe
                 try {
                     if (!controller.supplierExists(supplierId)) {
-                        JOptionPane.showMessageDialog(this, "Error: El ID Proveedor " + supplierId + " no existe en la base de datos.");
+                        JOptionPane.showMessageDialog(this, "Error: Supplier ID " + supplierId + " does not exist in the database.");
                         return;
                     }
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al verificar el proveedor: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error checking supplier: " + ex.getMessage());
                     return;
                 }
                 sparePart.setSupplierId(supplierId);
@@ -239,42 +171,40 @@ public class SparePartView extends JPanel {
                 sparePart.setEntryDate(entryDateField.getText());
                 sparePart.setUsefulLifeDays(Integer.parseInt(usefulLifeDaysField.getText()));
                 sparePart.setStatus((String) statusComboBox.getSelectedItem());
-                // Actualizar el repuesto
                 try {
                     controller.updateSparePart(sparePart);
-                    JOptionPane.showMessageDialog(this, "Repuesto actualizado con ID: " + selectedSparePartId);
+                    JOptionPane.showMessageDialog(this, "Spare part updated with ID: " + selectedSparePartId);
                     clearFields();
-                    selectedSparePartId = null; // Resetear selección
+                    selectedSparePartId = null;
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar repuesto: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error updating spare part: " + ex.getMessage());
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Error: Por favor ingrese valores numéricos válidos para Supplier ID, Stock Quantity, Min Stock Level y Useful Life.");
+                JOptionPane.showMessageDialog(this, "Error: Please enter valid numeric values for Supplier ID, Stock Quantity, Min Stock Level, and Useful Life.");
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Unexpected error: " + ex.getMessage());
             }
         });
 
         deleteButton.addActionListener(e -> {
             try {
                 if (selectedSparePartId == null) {
-                    JOptionPane.showMessageDialog(this, "Error: Por favor seleccione un repuesto de la lista primero.");
+                    JOptionPane.showMessageDialog(this, "Error: Please select a spare part from the list first.");
                     return;
                 }
-                // Confirmar eliminación
-                int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar el repuesto con ID " + selectedSparePartId + "?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+                int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the spare part with ID " + selectedSparePartId + "?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         controller.deleteSparePart(selectedSparePartId);
-                        JOptionPane.showMessageDialog(this, "Repuesto eliminado con ID: " + selectedSparePartId);
+                        JOptionPane.showMessageDialog(this, "Spare part deleted with ID: " + selectedSparePartId);
                         clearFields();
-                        selectedSparePartId = null; // Resetear selección
+                        selectedSparePartId = null;
                     } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Error al eliminar repuesto: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(this, "Error deleting spare part: " + ex.getMessage());
                     }
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Unexpected error: " + ex.getMessage());
             }
         });
 
@@ -291,14 +221,13 @@ public class SparePartView extends JPanel {
                             ", Status: " + s.getStatus() + "\n");
                 }
                 if (spareParts.isEmpty()) {
-                    sparePartsArea.append("No hay repuestos registrados.");
+                    sparePartsArea.append("No spare parts registered.");
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Error al cargar repuestos: " + ex.getMessage());
+                JOptionPane.showMessageDialog(this, "Error loading spare parts: " + ex.getMessage());
             }
         });
 
-        // Agregar funcionalidad para cargar datos al hacer clic en un repuesto
         sparePartsArea.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -308,7 +237,7 @@ public class SparePartView extends JPanel {
                     int start = sparePartsArea.getLineStartOffset(lineNumber);
                     int end = sparePartsArea.getLineEndOffset(lineNumber);
                     String line = sparePartsArea.getText(start, end - start);
-                    if (line.trim().isEmpty() || line.contains("No hay repuestos") || line.contains("Haga clic en")) {
+                    if (line.trim().isEmpty() || line.contains("No spare parts") || line.contains("Click 'View All'")) {
                         return;
                     }
                     String idStr = line.split(",")[0].replace("ID: ", "").trim();
@@ -328,12 +257,71 @@ public class SparePartView extends JPanel {
                         statusComboBox.setSelectedItem(sparePart.getStatus());
                     }
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(SparePartView.this, "Error al cargar repuesto: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(SparePartView.this, "Error loading spare part: " + ex.getMessage());
                 } catch (Exception ex) {
-                    // Ignorar errores de clic inválido
+                    // Ignore invalid click errors
                 }
             }
         });
+    }
+
+    private void addFormField(JPanel panel, String labelText, JComponent field, int gridx, int gridy) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = gridx;
+        gbc.gridy = gridy;
+        gbc.weightx = 0.0;
+        JLabel label = new JLabel(labelText);
+        styleLabel(label);
+        panel.add(label, gbc);
+
+        gbc.gridx = gridx + 1;
+        gbc.weightx = 1.0;
+        if (field instanceof JTextField) {
+            styleTextField((JTextField) field);
+        } else if (field instanceof JComboBox) {
+            styleComboBox((JComboBox<?>) field);
+        }
+        panel.add(field, gbc);
+    }
+
+    private JButton createMenuButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setBackground(COLOR_MENU_BUTTON_BG);
+        btn.setForeground(COLOR_TEXT_DARK);
+        btn.setFont(FONT_BUTTON);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(150, 35));
+        return btn;
+    }
+
+    private void styleTextField(JTextField field) {
+        field.setBackground(COLOR_COMPONENT_BG);
+        field.setForeground(COLOR_TEXT_DARK);
+        field.setFont(FONT_LABEL);
+        field.setBorder(BORDER_COMPONENT);
+        field.setCaretColor(COLOR_TEXT_DARK);
+    }
+
+    private void styleComboBox(JComboBox<?> comboBox) {
+        comboBox.setBackground(COLOR_COMPONENT_BG);
+        comboBox.setForeground(COLOR_TEXT_DARK);
+        comboBox.setFont(FONT_LABEL);
+    }
+
+    private void styleLabel(JLabel label) {
+        label.setForeground(COLOR_TEXT_LIGHT);
+        label.setFont(FONT_LABEL);
+    }
+
+    private void styleTextArea(JTextArea area) {
+        area.setBackground(COLOR_COMPONENT_BG);
+        area.setForeground(COLOR_TEXT_DARK);
+        area.setFont(FONT_TEXT_AREA);
+        area.setBorder(BORDER_COMPONENT);
+        area.setCaretColor(COLOR_TEXT_DARK);
     }
 
     private void clearFields() {
@@ -347,6 +335,6 @@ public class SparePartView extends JPanel {
         entryDateField.setText("");
         usefulLifeDaysField.setText("");
         statusComboBox.setSelectedIndex(0);
-        selectedSparePartId = null; // Resetear selección
+        selectedSparePartId = null;
     }
 }
