@@ -50,18 +50,18 @@ public class ClientePanel extends JPanel {
         bottomMenuPanel.setBackground(COLOR_BACKGROUND); // Match main background or use COLOR_COMPONENT_BG
         bottomMenuPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_COMPONENT_BG)); // Top border line
 
-        JButton btnRegistrar = createMenuButton("📋 Registrar");
-        JButton btnListar = createMenuButton("📑 Listar");
-        JButton btnBuscar = createMenuButton("🔍 Buscar");
-        JButton btnActualizar = createMenuButton("✏️ Actualizar");
+        JButton btnRegistrar = createMenuButton("📋 Register");
+        JButton btnListar = createMenuButton("📑 List");
+        JButton btnBuscar = createMenuButton("🔍 Search");
+        JButton btnActualizar = createMenuButton("✏️ Update");
 
-        btnRegistrar.addActionListener(e -> cardLayout.show(cardPanel, "registrar"));
+        btnRegistrar.addActionListener(e -> cardLayout.show(cardPanel, "Register"));
         btnListar.addActionListener(e -> {
-            cardLayout.show(cardPanel, "listar");
+            cardLayout.show(cardPanel, "List");
             cargarClientes();
         });
-        btnBuscar.addActionListener(e -> cardLayout.show(cardPanel, "buscar"));
-        btnActualizar.addActionListener(e -> cardLayout.show(cardPanel, "actualizar"));
+        btnBuscar.addActionListener(e -> cardLayout.show(cardPanel, "Search"));
+        btnActualizar.addActionListener(e -> cardLayout.show(cardPanel, "Update"));
 
         bottomMenuPanel.add(btnRegistrar);
         bottomMenuPanel.add(btnListar);
@@ -72,10 +72,10 @@ public class ClientePanel extends JPanel {
         cardPanel.setBackground(COLOR_BACKGROUND); // Match background
         cardPanel.setBorder(BorderFactory.createEmptyBorder()); // Remove default border if any
 
-        cardPanel.add(crearPanelRegistro(), "registrar");
-        cardPanel.add(crearPanelListado(), "listar");
-        cardPanel.add(crearPanelBuscar(), "buscar");
-        cardPanel.add(crearPanelActualizar(), "actualizar");
+        cardPanel.add(crearPanelRegistro(), "Register");
+        cardPanel.add(crearPanelListado(), "List");
+        cardPanel.add(crearPanelBuscar(), "Search");
+        cardPanel.add(crearPanelActualizar(), "Update");
 
         // Original menu on WEST is removed
         // add(menu, BorderLayout.WEST);
@@ -83,7 +83,7 @@ public class ClientePanel extends JPanel {
         add(bottomMenuPanel, BorderLayout.SOUTH); // Add menu to the bottom
 
         // Ensure the first panel is shown
-        cardLayout.show(cardPanel, "registrar");
+        cardLayout.show(cardPanel, "Register");
     }
 
     // Style for bottom menu buttons
@@ -146,7 +146,7 @@ public class ClientePanel extends JPanel {
 
 
     private JPanel crearPanelRegistro() {
-        JPanel panel = createFormPanel("Registrar Cliente");
+        JPanel panel = createFormPanel("Register Customer");
 
         JTextField txtNombre = new JTextField();
         JTextField txtId = new JTextField();
@@ -154,21 +154,21 @@ public class ClientePanel extends JPanel {
         JTextField txtEmail = new JTextField();
         JTextField txtPuntos = new JTextField("0");
         JTextField txtDescuento = new JTextField("0.0");
-        JButton btnGuardar = createActionButton("✅ Guardar");
+        JButton btnGuardar = createActionButton("✅ Save");
 
         styleTextField(txtNombre);
         styleTextField(txtId);
         styleTextField(txtTel);
         styleTextField(txtEmail);
-        styleTextField(txtPuntos); txtPuntos.setEditable(false); txtPuntos.setToolTipText("Calculado automáticamente");
-        styleTextField(txtDescuento); txtDescuento.setEditable(false); txtDescuento.setToolTipText("Calculado automáticamente");
+        styleTextField(txtPuntos); txtPuntos.setEditable(false); txtPuntos.setToolTipText("Automatically calculated");
+        styleTextField(txtDescuento); txtDescuento.setEditable(false); txtDescuento.setToolTipText("Automatically calculated");
 
-        addFormField(panel, "Nombre:", txtNombre);
-        addFormField(panel, "Identificación:", txtId);
-        addFormField(panel, "Teléfono:", txtTel);
+        addFormField(panel, "Name:", txtNombre);
+        addFormField(panel, "Identification:", txtId);
+        addFormField(panel, "Phone:", txtTel);
         addFormField(panel, "Email:", txtEmail);
-        addFormField(panel, "Puntos:", txtPuntos);
-        addFormField(panel, "Descuento %:", txtDescuento);
+        addFormField(panel, "Points:", txtPuntos);
+        addFormField(panel, "Discount %:", txtDescuento);
 
         // Add button with proper alignment if needed (GridLayout handles simple cases)
         panel.add(new JLabel()); // Placeholder for grid alignment
@@ -178,7 +178,7 @@ public class ClientePanel extends JPanel {
             try {
                 // --- Data validation could be added here ---
                 if (txtNombre.getText().trim().isEmpty() || txtId.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Nombre e Identificación son obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Name and Indentification are mandatory.", "Validation", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -193,15 +193,15 @@ public class ClientePanel extends JPanel {
 
                 controller.registerClient(cliente);
 
-                JOptionPane.showMessageDialog(this, "✅ Cliente registrado con ID: " + cliente.getId(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "✅ Customer registered with ID: " + cliente.getId(), "Success", JOptionPane.INFORMATION_MESSAGE);
 
                 // Clear fields
                 txtNombre.setText(""); txtId.setText(""); txtTel.setText(""); txtEmail.setText("");
                 txtPuntos.setText("0"); txtDescuento.setText("0.0");
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error: Verifique los campos numéricos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error: Check numeric fields.", "Format Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error al registrar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error while registering: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -210,7 +210,7 @@ public class ClientePanel extends JPanel {
 
     private JPanel crearPanelListado() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(createStyledTitledBorder("Clientes Registrados"));
+        panel.setBorder(createStyledTitledBorder("Registered Clients"));
         panel.setBackground(COLOR_BACKGROUND);
 
         styleTextArea(areaListado);
@@ -229,7 +229,7 @@ public class ClientePanel extends JPanel {
             List<Client> lista = controller.listAllClients();
             areaListado.setText(""); // Clear previous content
             if (lista.isEmpty()) {
-                areaListado.setText(" --- No hay clientes registrados ---");
+                areaListado.setText(" --- There's no registered clients ---");
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (Client c : lista) {
@@ -237,34 +237,34 @@ public class ClientePanel extends JPanel {
                     // controller.aplicarBeneficios(c); // Uncomment if benefits should be shown in list
 
                     sb.append("ID        : ").append(c.getId()).append("\n");
-                    sb.append("Nombre    : ").append(c.getName()).append("\n");
+                    sb.append("Name    : ").append(c.getName()).append("\n");
                     sb.append("Ident.    : ").append(c.getIdentification()).append("\n");
-                    sb.append("Teléfono  : ").append(c.getPhone()).append("\n");
+                    sb.append("Phone  : ").append(c.getPhone()).append("\n");
                     sb.append("Email     : ").append(c.getEmail()).append("\n");
-                    sb.append("Puntos    : ").append(c.getRewardPoints()).append("\n");
-                    sb.append("Descuento : ").append(String.format("%.1f%%", c.getDiscountPercentage())).append("\n");
+                    sb.append("Points    : ").append(c.getRewardPoints()).append("\n");
+                    sb.append("Discount : ").append(String.format("%.1f%%", c.getDiscountPercentage())).append("\n");
                     sb.append("------------------------------------\n");
                 }
                 areaListado.setText(sb.toString());
                 areaListado.setCaretPosition(0); // Scroll to top
             }
         } catch (Exception e) {
-            areaListado.setText("❌ Error al cargar clientes: " + e.getMessage());
+            areaListado.setText("❌ Error while loading clients: " + e.getMessage());
         }
     }
 
     private JPanel crearPanelBuscar() {
         JPanel panel = new JPanel(new BorderLayout(10, 15)); // Gaps
-        panel.setBorder(createStyledTitledBorder("Buscar Cliente"));
+        panel.setBorder(createStyledTitledBorder("Search Client"));
         panel.setBackground(COLOR_BACKGROUND);
         panel.setBorder(BorderFactory.createCompoundBorder(
-                createStyledTitledBorder("Buscar Cliente"),
+                createStyledTitledBorder("Search Client"),
                 BORDER_PADDING // Add padding inside the border
         ));
 
 
         JTextField txtBuscar = new JTextField();
-        JButton btnBuscarAction = createActionButton("🔎 Buscar");
+        JButton btnBuscarAction = createActionButton("🔎Search");
         JTextArea resultado = new JTextArea();
         resultado.setEditable(false);
 
@@ -273,7 +273,7 @@ public class ClientePanel extends JPanel {
 
         JPanel top = new JPanel(new BorderLayout(10, 0)); // Gap between label/field and button
         top.setBackground(COLOR_BACKGROUND); // Match parent background
-        JLabel lblBuscar = new JLabel("Ingrese ID Cliente:");
+        JLabel lblBuscar = new JLabel("Enter client ID:");
         styleLabel(lblBuscar);
 
         top.add(lblBuscar, BorderLayout.WEST);
@@ -283,28 +283,28 @@ public class ClientePanel extends JPanel {
         btnBuscarAction.addActionListener(e -> {
             try {
                 if (txtBuscar.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Por favor ingrese un ID para buscar.", "Entrada Requerida", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Please enter an ID.", "Required field", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 int id = Integer.parseInt(txtBuscar.getText().trim());
                 Client c = controller.findClientById(id);
                 if (c != null) {
                     controller.aplicarBeneficios(c); // Apply benefits when found
-                    resultado.setText("--- Cliente Encontrado ---\n");
+                    resultado.setText("--- Client found ---\n");
                     resultado.append("ID        : " + c.getId() + "\n");
-                    resultado.append("Nombre    : " + c.getName() + "\n");
+                    resultado.append("Name    : " + c.getName() + "\n");
                     resultado.append("Ident.    : " + c.getIdentification() + "\n");
-                    resultado.append("Teléfono  : " + c.getPhone() + "\n");
+                    resultado.append("Phone  : " + c.getPhone() + "\n");
                     resultado.append("Email     : " + c.getEmail() + "\n");
-                    resultado.append("Puntos    : " + c.getRewardPoints() + "\n");
-                    resultado.append("Descuento : " + String.format("%.1f%%", c.getDiscountPercentage()));
+                    resultado.append("Points    : " + c.getRewardPoints() + "\n");
+                    resultado.append("Discount : " + String.format("%.1f%%", c.getDiscountPercentage()));
                 } else {
-                    resultado.setText("--- Cliente con ID " + id + " no encontrado. ---");
+                    resultado.setText("--- Client with ID " + id + " not found. ---");
                 }
             } catch (NumberFormatException ex) {
-                resultado.setText("❌ Error: Ingrese un ID numérico válido.");
+                resultado.setText("❌ Error: Enter a valid ID.");
             } catch (Exception ex) {
-                resultado.setText("❌ Error al buscar: " + ex.getMessage());
+                resultado.setText("❌ Error while searching: " + ex.getMessage());
             }
         });
 
@@ -318,7 +318,7 @@ public class ClientePanel extends JPanel {
     }
 
     private JPanel crearPanelActualizar() {
-        JPanel panel = createFormPanel("Actualizar Cliente");
+        JPanel panel = createFormPanel("Update Client");
 
         JTextField txtId = new JTextField();
         JTextField txtNombre = new JTextField();
@@ -327,21 +327,21 @@ public class ClientePanel extends JPanel {
         JTextField txtEmail = new JTextField();
         JTextField txtPuntos = new JTextField();
         JTextField txtDescuento = new JTextField();
-        JButton btnCargar = createActionButton("📥 Cargar Datos");
-        JButton btnActualizarAction = createActionButton("💾 Actualizar");
+        JButton btnCargar = createActionButton("📥 Load Data");
+        JButton btnActualizarAction = createActionButton("💾Update");
 
         styleTextField(txtId);
         styleTextField(txtNombre);
         styleTextField(txtIdent);
         styleTextField(txtTel);
         styleTextField(txtEmail);
-        styleTextField(txtPuntos); txtPuntos.setEditable(false); txtPuntos.setToolTipText("No editable directamente");
-        styleTextField(txtDescuento); txtDescuento.setEditable(false); txtDescuento.setToolTipText("No editable directamente");
+        styleTextField(txtPuntos); txtPuntos.setEditable(false); txtPuntos.setToolTipText("No editable");
+        styleTextField(txtDescuento); txtDescuento.setEditable(false); txtDescuento.setToolTipText("No editable");
 
         // Using a slightly different layout for the load button
         JPanel loadPanel = new JPanel(new BorderLayout(5,0));
         loadPanel.setBackground(COLOR_BACKGROUND); // Match form background
-        JLabel idLabel = new JLabel("ID Cliente a Actualizar:");
+        JLabel idLabel = new JLabel("Client ID to update:");
         styleLabel(idLabel);
         loadPanel.add(idLabel, BorderLayout.WEST);
         loadPanel.add(txtId, BorderLayout.CENTER);
@@ -349,12 +349,12 @@ public class ClientePanel extends JPanel {
         panel.add(loadPanel); // Add this composite panel to the grid
         panel.add(new JLabel()); // Grid placeholder
 
-        addFormField(panel, "Nombre:", txtNombre);
-        addFormField(panel, "Identificación:", txtIdent);
-        addFormField(panel, "Teléfono:", txtTel);
+        addFormField(panel, "Name:", txtNombre);
+        addFormField(panel, "Ident.:", txtIdent);
+        addFormField(panel, "Phone:", txtTel);
         addFormField(panel, "Email:", txtEmail);
-        addFormField(panel, "Puntos Actuales:", txtPuntos); // Label changed for clarity
-        addFormField(panel, "Descuento Actual %:", txtDescuento); // Label changed
+        addFormField(panel, "Points:", txtPuntos); // Label changed for clarity
+        addFormField(panel, "Discount %:", txtDescuento); // Label changed
 
         panel.add(new JLabel()); // Placeholder
         panel.add(btnActualizarAction);
@@ -362,7 +362,7 @@ public class ClientePanel extends JPanel {
         btnCargar.addActionListener(e -> {
             try {
                 if (txtId.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Ingrese un ID para cargar.", "Entrada Requerida", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Enter an ID", "Required field", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 int id = Integer.parseInt(txtId.getText().trim());
@@ -377,22 +377,22 @@ public class ClientePanel extends JPanel {
                     txtDescuento.setText(String.format("%.1f", c.getDiscountPercentage())); // Display raw number for potential future edit logic
                     txtNombre.requestFocusInWindow(); // Focus first editable field
                 } else {
-                    JOptionPane.showMessageDialog(this, "Cliente con ID " + id + " no encontrado.", "No Encontrado", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Client with ID " + id + " not found.", "Not found", JOptionPane.WARNING_MESSAGE);
                     // Clear fields if not found
                     txtNombre.setText(""); txtIdent.setText(""); txtTel.setText(""); txtEmail.setText("");
                     txtPuntos.setText(""); txtDescuento.setText("");
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error: Ingrese un ID numérico válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error: Enter a valid ID.", "Format Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error al cargar datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error while loading data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         btnActualizarAction.addActionListener(e -> {
             try {
                 if (txtId.getText().trim().isEmpty() || txtNombre.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Se requiere ID y Nombre para actualizar.", "Validación", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Name and ID are mandatory.", "Validation", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 int id = Integer.parseInt(txtId.getText().trim());
@@ -407,14 +407,14 @@ public class ClientePanel extends JPanel {
                     // Do NOT update points/discount here; they are managed by controller logic
 
                     controller.updateClient(c);
-                    JOptionPane.showMessageDialog(this, "✅ Cliente actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "✅ Client updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Cliente con ID " + id + " no encontrado. No se pudo actualizar.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Client with ID " + id + " not found.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error: ID debe ser numérico.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error: ID.", "Format Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error al actualizar: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error while updating: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 

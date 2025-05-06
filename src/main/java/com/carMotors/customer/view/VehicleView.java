@@ -50,10 +50,10 @@ public class VehicleView extends JPanel {
         bottomMenuPanel.setBackground(COLOR_BACKGROUND);
         bottomMenuPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, COLOR_COMPONENT_BG)); // Top line
 
-        JButton btnRegistrar = createMenuButton("🚗 Registrar");
-        JButton btnListar = createMenuButton("📋 Listar");
-        JButton btnBuscar = createMenuButton("🔎 Buscar");
-        JButton btnActualizar = createMenuButton("🛠️ Actualizar");
+        JButton btnRegistrar = createMenuButton("🚗 Register");
+        JButton btnListar = createMenuButton("📋 List");
+        JButton btnBuscar = createMenuButton("🔎 Search");
+        JButton btnActualizar = createMenuButton("🛠️ Update");
 
         btnRegistrar.addActionListener(e -> cardLayout.show(cardPanel, "registrar"));
         btnListar.addActionListener(e -> {
@@ -67,7 +67,6 @@ public class VehicleView extends JPanel {
         bottomMenuPanel.add(btnListar);
         bottomMenuPanel.add(btnBuscar);
         bottomMenuPanel.add(btnActualizar);
-
 
         // --- Card Panel for Content ---
         cardPanel.setBackground(COLOR_BACKGROUND);
@@ -160,14 +159,14 @@ public class VehicleView extends JPanel {
     // --- Panel Creation Methods ---
 
     private JPanel crearPanelRegistro() {
-        JPanel panel = createFormPanel("Registrar Vehículo");
+        JPanel panel = createFormPanel("Register Vehicle");
 
         JTextField txtPlaca = new JTextField();
         JTextField txtMarca = new JTextField();
         JTextField txtModelo = new JTextField();
         JTextField txtTipo = new JTextField();
         JTextField txtClienteId = new JTextField();
-        JButton btnGuardar = createActionButton("✅ Guardar Vehículo");
+        JButton btnGuardar = createActionButton("✅ Save Vehicle");
 
         styleTextField(txtPlaca);
         styleTextField(txtMarca);
@@ -175,11 +174,11 @@ public class VehicleView extends JPanel {
         styleTextField(txtTipo);
         styleTextField(txtClienteId);
 
-        addFormField(panel, "Placa:", txtPlaca);
-        addFormField(panel, "Marca:", txtMarca);
-        addFormField(panel, "Modelo:", txtModelo);
-        addFormField(panel, "Tipo:", txtTipo);
-        addFormField(panel, "ID Cliente Propietario:", txtClienteId);
+        addFormField(panel, "License Plate:", txtPlaca);
+        addFormField(panel, "Brand:", txtMarca);
+        addFormField(panel, "Model:", txtModelo);
+        addFormField(panel, "Type:", txtTipo);
+        addFormField(panel, "Owner Client ID:", txtClienteId);
 
         panel.add(new JLabel()); // Placeholder
         panel.add(btnGuardar);
@@ -188,7 +187,7 @@ public class VehicleView extends JPanel {
             try {
                 // Basic Validation
                 if (txtPlaca.getText().trim().isEmpty() || txtClienteId.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Placa e ID Cliente son obligatorios.", "Validación", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "License Plate and Client ID are required.", "Validation", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -200,26 +199,25 @@ public class VehicleView extends JPanel {
                 v.setClientId(Integer.parseInt(txtClienteId.getText().trim())); // Validate number format
 
                 controller.registerVehicle(v);
-                JOptionPane.showMessageDialog(this, "✅ Vehículo registrado con ID: " + v.getId(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "✅ Vehicle registered with ID: " + v.getId(), "Success", JOptionPane.INFORMATION_MESSAGE);
 
                 // Clear fields
                 txtPlaca.setText(""); txtMarca.setText(""); txtModelo.setText("");
                 txtTipo.setText(""); txtClienteId.setText("");
 
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error: ID Cliente debe ser un número válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error: Client ID must be a valid number.", "Format Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error al registrar vehículo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error registering vehicle: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         return panel;
     }
 
-
     private JPanel crearPanelListado() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(createStyledTitledBorder("Vehículos Registrados"));
+        panel.setBorder(createStyledTitledBorder("Registered Vehicles"));
         panel.setBackground(COLOR_BACKGROUND);
 
         styleTextArea(areaListado); // Use the shared text area
@@ -238,37 +236,36 @@ public class VehicleView extends JPanel {
             List<Vehicle> lista = controller.listAllVehicles();
             areaListado.setText(""); // Clear
             if (lista.isEmpty()) {
-                areaListado.setText(" --- No hay vehículos registrados ---");
+                areaListado.setText(" --- No vehicles registered ---");
             } else {
                 StringBuilder sb = new StringBuilder();
                 for (Vehicle v : lista) {
                     sb.append("ID        : ").append(v.getId()).append("\n");
-                    sb.append("Placa     : ").append(v.getLicensePlate()).append("\n");
-                    sb.append("Marca     : ").append(v.getBrand()).append("\n");
-                    sb.append("Modelo    : ").append(v.getModel()).append("\n");
-                    sb.append("Tipo      : ").append(v.getType()).append("\n");
-                    sb.append("ID Cliente: ").append(v.getClientId()).append("\n");
+                    sb.append("License Plate     : ").append(v.getLicensePlate()).append("\n");
+                    sb.append("Brand     : ").append(v.getBrand()).append("\n");
+                    sb.append("Model    : ").append(v.getModel()).append("\n");
+                    sb.append("Type      : ").append(v.getType()).append("\n");
+                    sb.append("Client ID: ").append(v.getClientId()).append("\n");
                     sb.append("------------------------------------\n");
                 }
                 areaListado.setText(sb.toString());
                 areaListado.setCaretPosition(0); // Scroll top
             }
         } catch (Exception e) {
-            areaListado.setText("❌ Error al cargar vehículos: " + e.getMessage());
+            areaListado.setText("❌ Error loading vehicles: " + e.getMessage());
         }
     }
-
 
     private JPanel crearPanelBuscar() {
         JPanel panel = new JPanel(new BorderLayout(10, 15));
         panel.setBackground(COLOR_BACKGROUND);
         panel.setBorder(BorderFactory.createCompoundBorder(
-                createStyledTitledBorder("Buscar Vehículo"),
+                createStyledTitledBorder("Search Vehicle"),
                 BORDER_PADDING
         ));
 
         JTextField txtBuscar = new JTextField();
-        JButton btnBuscarAction = createActionButton("🔎 Buscar");
+        JButton btnBuscarAction = createActionButton("🔎 Search");
         JTextArea resultado = new JTextArea();
         resultado.setEditable(false);
 
@@ -277,7 +274,7 @@ public class VehicleView extends JPanel {
 
         JPanel top = new JPanel(new BorderLayout(10, 0));
         top.setBackground(COLOR_BACKGROUND);
-        JLabel lblBuscar = new JLabel("Ingrese ID Vehículo:");
+        JLabel lblBuscar = new JLabel("Enter Vehicle ID:");
         styleLabel(lblBuscar);
 
         top.add(lblBuscar, BorderLayout.WEST);
@@ -287,26 +284,26 @@ public class VehicleView extends JPanel {
         btnBuscarAction.addActionListener(e -> {
             try {
                 if (txtBuscar.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Por favor ingrese un ID para buscar.", "Entrada Requerida", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Please enter an ID to search.", "Input Required", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 int id = Integer.parseInt(txtBuscar.getText().trim());
                 Vehicle v = controller.findVehicleById(id);
                 if (v != null) {
-                    resultado.setText("--- Vehículo Encontrado ---\n");
+                    resultado.setText("--- Vehicle Found ---\n");
                     resultado.append("ID        : " + v.getId() + "\n");
-                    resultado.append("Placa     : " + v.getLicensePlate() + "\n");
-                    resultado.append("Marca     : " + v.getBrand() + "\n");
-                    resultado.append("Modelo    : " + v.getModel() + "\n");
-                    resultado.append("Tipo      : " + v.getType() + "\n");
-                    resultado.append("ID Cliente: " + v.getClientId());
+                    resultado.append("License Plate     : " + v.getLicensePlate() + "\n");
+                    resultado.append("Brand     : " + v.getBrand() + "\n");
+                    resultado.append("Model    : " + v.getModel() + "\n");
+                    resultado.append("Type      : " + v.getType() + "\n");
+                    resultado.append("Client ID: " + v.getClientId());
                 } else {
-                    resultado.setText("--- Vehículo con ID " + id + " no encontrado. ---");
+                    resultado.setText("--- Vehicle with ID " + id + " not found. ---");
                 }
             } catch (NumberFormatException ex) {
-                resultado.setText("❌ Error: Ingrese un ID numérico válido.");
+                resultado.setText("❌ Error: Enter a valid numeric ID.");
             } catch (Exception ex) {
-                resultado.setText("❌ Error al buscar: " + ex.getMessage());
+                resultado.setText("❌ Error searching: " + ex.getMessage());
             }
         });
 
@@ -319,9 +316,8 @@ public class VehicleView extends JPanel {
         return panel;
     }
 
-
     private JPanel crearPanelActualizar() {
-        JPanel panel = createFormPanel("Actualizar Vehículo"); // Using helper now
+        JPanel panel = createFormPanel("Update Vehicle");
 
         JTextField txtId = new JTextField();
         JTextField txtPlaca = new JTextField();
@@ -329,8 +325,8 @@ public class VehicleView extends JPanel {
         JTextField txtModelo = new JTextField();
         JTextField txtTipo = new JTextField();
         JTextField txtClienteId = new JTextField();
-        JButton btnCargar = createActionButton("📥 Cargar Datos");
-        JButton btnActualizarAction = createActionButton("💾 Actualizar Vehículo");
+        JButton btnCargar = createActionButton("📥 Load Data");
+        JButton btnActualizarAction = createActionButton("💾 Update Vehicle");
 
         styleTextField(txtId);
         styleTextField(txtPlaca);
@@ -342,7 +338,7 @@ public class VehicleView extends JPanel {
         // Composite panel for loading by ID
         JPanel loadPanel = new JPanel(new BorderLayout(5, 0));
         loadPanel.setBackground(COLOR_BACKGROUND);
-        JLabel idLabel = new JLabel("ID Vehículo a Actualizar:");
+        JLabel idLabel = new JLabel("Vehicle ID to Update:");
         styleLabel(idLabel);
         loadPanel.add(idLabel, BorderLayout.WEST);
         loadPanel.add(txtId, BorderLayout.CENTER);
@@ -351,11 +347,11 @@ public class VehicleView extends JPanel {
         panel.add(new JLabel()); // Placeholder
 
         // Add remaining fields using helper
-        addFormField(panel, "Placa:", txtPlaca);
-        addFormField(panel, "Marca:", txtMarca);
-        addFormField(panel, "Modelo:", txtModelo);
-        addFormField(panel, "Tipo:", txtTipo);
-        addFormField(panel, "ID Cliente Propietario:", txtClienteId);
+        addFormField(panel, "License Plate:", txtPlaca);
+        addFormField(panel, "Brand:", txtMarca);
+        addFormField(panel, "Model:", txtModelo);
+        addFormField(panel, "Type:", txtTipo);
+        addFormField(panel, "Owner Client ID:", txtClienteId);
 
         panel.add(new JLabel()); // Placeholder
         panel.add(btnActualizarAction);
@@ -363,7 +359,7 @@ public class VehicleView extends JPanel {
         btnCargar.addActionListener(e -> {
             try {
                 if (txtId.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Ingrese un ID para cargar.", "Entrada Requerida", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Enter an ID to load.", "Input Required", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 int id = Integer.parseInt(txtId.getText().trim());
@@ -376,22 +372,22 @@ public class VehicleView extends JPanel {
                     txtClienteId.setText(String.valueOf(v.getClientId()));
                     txtPlaca.requestFocusInWindow(); // Focus first editable field
                 } else {
-                    JOptionPane.showMessageDialog(this, "Vehículo con ID " + id + " no encontrado.", "No Encontrado", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Vehicle with ID " + id + " not found.", "Not Found", JOptionPane.WARNING_MESSAGE);
                     // Clear fields if not found
                     txtPlaca.setText(""); txtMarca.setText(""); txtModelo.setText("");
                     txtTipo.setText(""); txtClienteId.setText("");
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error: Ingrese un ID numérico válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error: Enter a valid numeric ID.", "Format Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error al cargar datos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error loading data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         btnActualizarAction.addActionListener(e -> {
             try {
                 if (txtId.getText().trim().isEmpty() || txtPlaca.getText().trim().isEmpty() || txtClienteId.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Se requiere ID, Placa e ID Cliente para actualizar.", "Validación", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "ID, License Plate, and Client ID are required to update.", "Validation", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 int id = Integer.parseInt(txtId.getText().trim());
@@ -404,14 +400,14 @@ public class VehicleView extends JPanel {
                     v.setClientId(Integer.parseInt(txtClienteId.getText().trim())); // Validate number
 
                     controller.updateVehicle(v);
-                    JOptionPane.showMessageDialog(this, "✅ Vehículo actualizado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "✅ Vehicle updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Vehículo con ID " + id + " no encontrado. No se pudo actualizar.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Vehicle with ID " + id + " not found. Could not update.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error: ID y/o ID Cliente deben ser numéricos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error: ID and/or Client ID must be numeric.", "Format Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "❌ Error al actualizar vehículo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "❌ Error updating vehicle: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
