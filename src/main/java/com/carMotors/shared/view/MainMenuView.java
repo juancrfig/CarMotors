@@ -1,5 +1,6 @@
 package com.carMotors.shared.view;
 
+import com.carMotors.core.util.DatabaseManager;
 import com.carMotors.customer.controller.ClientController;
 import com.carMotors.customer.controller.VehicleController;
 import com.carMotors.customer.model.IClienteDAO;
@@ -8,24 +9,38 @@ import com.carMotors.customer.model.ClientDAO;
 import com.carMotors.customer.model.VehicleDAO;
 import com.carMotors.customer.view.ClientePanel;
 import com.carMotors.customer.view.VehicleView;
+import com.carMotors.inventory.controller.SparePartController;
+import com.carMotors.inventory.model.SparePartDAO;
+import com.carMotors.inventory.view.SparePartView;
+import com.carMotors.supplier.controller.SupplierController;
+import com.carMotors.supplier.model.SupplierDAO;
+import com.carMotors.supplier.view.SupplierView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class MainMenuView extends JFrame {
 
     private JTabbedPane tabbedPane;
     private ClientePanel clientPanel;
     private VehicleView vehicleView;
-    private JPanel inventoryPanel;
+    private SparePartView sparePartView;
+    private SupplierView supplierView;
     private JPanel maintenancePanel;
-    private JPanel supplierPanel;
     private JPanel reportsPanel;
 
     private ClientController clientController;
     private VehicleController vehicleController;
+    private SparePartController sparePartController;
+    private SupplierController supplierController;
     private IClienteDAO clientDAO;
     private IVehicleDAO vehicleDAO;
+    private SparePartDAO sparePartDAO;
+    private SupplierDAO supplierDAO;
+    private Connection connection;
 
     public MainMenuView() {
         setTitle("Automotive Workshop Management System");
@@ -33,36 +48,48 @@ public class MainMenuView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Initialize DAOs (using real implementations)
-        clientDAO = new ClientDAO();
-        vehicleDAO = new VehicleDAO();
+        try {
+            // Inicializa la conexión a la base de datos
+            connection = DatabaseManager.getConnection();
 
-        // Initialize Controllers
-        clientController = new ClientController(clientDAO, this);
-        vehicleController = new VehicleController(vehicleDAO);
+            // Inicializa DAOs con conexión válida
+            clientDAO = new ClientDAO();
+            vehicleDAO = new VehicleDAO();
+            sparePartDAO = new SparePartDAO(connection);
+            supplierDAO = new SupplierDAO(connection);
 
-        // Initialize Panels
-        clientPanel = new ClientePanel(clientController);
-        vehicleView = new VehicleView(vehicleController);
-        inventoryPanel = createPlaceholderPanel("Inventory Management - Under Construction");
-        maintenancePanel = createPlaceholderPanel("Maintenance and Repairs - Under Construction");
-        supplierPanel = createPlaceholderPanel("Suppliers and Purchasing - Under Construction");
-        reportsPanel = createPlaceholderPanel("Reports and Statistics - Under Construction");
+            // Inicializa Controllers
+            clientController = new ClientController(clientDAO, this);
+            vehicleController = new VehicleController(vehicleDAO);
+            sparePartController = new SparePartController(sparePartDAO, supplierDAO);
+            supplierController = new SupplierController(supplierDAO); // ← Ahora recibe el DAO, no la conexión
 
-        // Setup Tabbed Pane
-        tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Clients", clientPanel);
-        tabbedPane.addTab("Vehicles", vehicleView);
-        tabbedPane.addTab("Inventory Management", inventoryPanel);
-        tabbedPane.addTab("Maintenance & Repairs", maintenancePanel);
-        tabbedPane.addTab("Suppliers & Purchasing", supplierPanel);
-        tabbedPane.addTab("Reports & Statistics", reportsPanel);
+            // Inicializa las Vistas
+            clientPanel = new ClientePanel(clientController);
+            vehicleView = new VehicleView(vehicleController);
+            sparePartView = new SparePartView(sparePartController);
+            supplierView = new SupplierView(supplierController);
+            maintenancePanel = createPlaceholderPanel("Maintenance and Repairs - Under Construction");
+            reportsPanel = createPlaceholderPanel("Reports and Statistics - Under Construction");
 
-        // Add Tabbed Pane to Frame
-        add(tabbedPane, BorderLayout.CENTER);
+            // Configura las pestañas
+            tabbedPane = new JTabbedPane();
+            tabbedPane.addTab("Clients", clientPanel);
+            tabbedPane.addTab("Vehicles", vehicleView);
+            tabbedPane.addTab("Spare Parts", sparePartView);
+            tabbedPane.addTab("Suppliers", supplierView);
+            tabbedPane.addTab("Maintenance & Repairs", maintenancePanel);
+            tabbedPane.addTab("Reports & Statistics", reportsPanel);
+
+            add(tabbedPane, BorderLayout.CENTER);
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database connection error: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    // Helper method to create simple placeholder panels
+    // Paneles de texto temporal
     private JPanel createPlaceholderPanel(String text) {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel label = new JLabel(text, SwingConstants.CENTER);
@@ -70,6 +97,4 @@ public class MainMenuView extends JFrame {
         panel.add(label, BorderLayout.CENTER);
         return panel;
     }
-
-    // No need for a main method here, it's launched from com.carMotors.Main
 }

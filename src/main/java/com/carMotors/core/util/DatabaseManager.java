@@ -18,6 +18,7 @@ public class DatabaseManager {
 
     private DatabaseManager() {}
 
+    // Este método devuelve una nueva conexión cada vez que se llama
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             try {
@@ -35,6 +36,7 @@ public class DatabaseManager {
         return connection;
     }
 
+    // Este método cierra la conexión si está abierta
     public static void closeConnection() {
         if (connection != null) {
             try {
